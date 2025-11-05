@@ -1,6 +1,8 @@
 const express = require('express');
 require('dotenv').config();
 
+const crypto = require('crypto');
+
 const app = express();
 app.use(express.json())
 
@@ -16,14 +18,39 @@ app.use(limiter);
 
 const port = process.env.PORT;
 const webhook = process.env.DISCORD_WEBHOOK;
+const GITHUB_SECRET = process.env.GITHUB_SECRET;
 
-app.get('/test', (req, res) => {
-    res.send('yo!')
+app.post('/github-webhook', async (req, res) => {
     app.rateLimit
+
+    const signature = req.headers['x-hub-signature-256']
+    const hmac = crypto.createHmac('sha256', GITHUB_SECRET)
+    const digest = 'sha256=' + hmac.update(JSON.stringify(req.body)).digest('hex');
+
+    if (signature !== digest ) {
+        return res.status(401).send('Unauthorized')
+    }
+
+    const data = req.body
+    console.log('Recieved push from Github', data)
+
+    const repoName = data.repository?.name || 'Unknown';
+    const pusher = data.pusher?.name || 'Unknown';
+    const commitMsg = data.commits?.[0]?.message || 'No message';
+
+    await fetch(webhook, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            content: `🚀 ${pusher} pushed to ${repoName}: "${commitMsg}"`
+        })
+    })
+
+
+    res.status(200).send('Webhook received');
 })
 
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
-  console.log(`Discord webhook URL: ${webhook}`);
 })
