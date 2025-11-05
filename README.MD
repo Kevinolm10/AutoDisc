@@ -135,24 +135,6 @@ Prevents abuse by limiting request frequency.
 - [ ] Support other events (issues, pull requests, releases)
 - [ ] Add Slack/Telegram support alongside Discord
 
-## Deployment (24/7 Hosting)
-
-To run this continuously, deploy to a hosting service:
-
-**Recommended: Render.com (Free)**
-1. Push code to GitHub
-2. Create new Web Service on Render
-3. Connect your repository
-4. Add environment variables
-5. Deploy
-6. Update GitHub webhook with Render URL
-
-**Other options:**
-- Railway.app
-- Fly.io
-- DigitalOcean
-- Heroku
-
 ## Troubleshooting
 
 **Discord message not appearing?**
