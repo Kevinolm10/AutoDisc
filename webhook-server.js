@@ -1,11 +1,15 @@
+// initialize webhook-server.js
 const express = require('express');
 require('dotenv').config();
 
+// For signature verification
 const crypto = require('crypto');
 
 const app = express();
 app.use(express.json())
 
+
+// Rate limiting middleware
 const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
@@ -16,10 +20,13 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+// Environment variables
 const port = process.env.PORT;
 const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK;
 const GITHUB_SECRET = process.env.GITHUB_SECRET;
 
+
+// GitHub webhook endpoint
 app.post('/github-webhook', async (req, res) => {
     app.rateLimit
 
@@ -28,7 +35,7 @@ app.post('/github-webhook', async (req, res) => {
     const digest = 'sha256=' + hmac.update(JSON.stringify(req.body)).digest('hex');
 
     if (signature !== digest ) {
-        console.log('❌ Signature mismatch!');
+        console.log('Signature mismatch!');
         console.log('Expected:', digest);
         console.log('Got:', signature);
         return res.status(401).send('Unauthorized')
@@ -54,6 +61,7 @@ app.post('/github-webhook', async (req, res) => {
 })
 
 
+// Start server
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 })
