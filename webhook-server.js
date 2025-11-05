@@ -28,11 +28,14 @@ app.post('/github-webhook', async (req, res) => {
     const digest = 'sha256=' + hmac.update(JSON.stringify(req.body)).digest('hex');
 
     if (signature !== digest ) {
+        console.log('❌ Signature mismatch!');
+        console.log('Expected:', digest);
+        console.log('Got:', signature);
         return res.status(401).send('Unauthorized')
     }
 
     const data = req.body
-    console.log('Recieved push from Github', data)
+    console.log('Received push from Github:', JSON.stringify(data, null, 2))
 
     const repoName = data.repository?.name || 'Unknown';
     const pusher = data.pusher?.name || 'Unknown';
