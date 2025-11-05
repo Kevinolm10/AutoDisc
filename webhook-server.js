@@ -17,7 +17,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 const port = process.env.PORT;
-const webhook = process.env.DISCORD_WEBHOOK;
+const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK;
 const GITHUB_SECRET = process.env.GITHUB_SECRET;
 
 app.post('/github-webhook', async (req, res) => {
@@ -41,7 +41,7 @@ app.post('/github-webhook', async (req, res) => {
     const pusher = data.pusher?.name || 'Unknown';
     const commitMsg = data.commits?.[0]?.message || 'No message';
 
-    await fetch(webhook, {
+    await fetch(DISCORD_WEBHOOK, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
