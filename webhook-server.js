@@ -1,8 +1,10 @@
 const express = require('express');
-const app = express();
-const rateLimit = require('express-rate-limit');
+require('dotenv').config();
 
+const app = express();
 app.use(express.json())
+
+const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000,
@@ -12,7 +14,8 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-const discWebhook = 'https://discordapp.com/api/webhooks/1435719141008080926/igAUdpPex1AxlQvCjLrL1i16K8Sgf6nZiKra3BnG-4zmGEjWSSyjrIXIH81YskttBv9m'
+const port = process.env.PORT;
+const webhook = process.env.DISCORD_WEBHOOK;
 
 app.get('/test', (req, res) => {
     res.send('yo!')
@@ -20,6 +23,7 @@ app.get('/test', (req, res) => {
 })
 
 
-app.listen(8000, () => {
-    console.log('server is listening on port 8000')
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+  console.log(`Discord webhook URL: ${webhook}`);
 })
